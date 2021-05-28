@@ -4,32 +4,29 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-public class PID {
+public class TBH {
 
     DcMotorEx motor;
     FtcDashboard dashboard;
 
-    public PID(DcMotorEx motor, FtcDashboard dashboard) {
+    public TBH(DcMotorEx motor, FtcDashboard dashboard) {
         this.motor = motor;
         this.dashboard = dashboard;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    //Variables needed for measuring rate of change
+    //Variables for rate of change
     double lastTime = 0;
     double lastPosition = 0;
-    double lastVelocity = 0;
     double integralErr = 0;
-    double lastError = 0;
 
-    //Output variables
-    private double velocity;
+    double lastErrorSign = 1;
+    double takeBackFactor = 1;
 
-    // Setpoint in radians/second
-    public void update(double setpoint, double kP, double kI, double kD) {
+    //output (for getter)
+    double velocity;
+    public void update(double setpoint, double gain) {
 
         //Time, position, change in time, change in position
         double currTime = System.currentTimeMillis();
@@ -46,22 +43,24 @@ public class PID {
 
         //Error is also in rad/s
         double error = setpoint - velocity;
+
+        //Check for crossover
+        double sign;
+        if(error >= 0) sign = 1;
+        else sign = -1;
+
+        if(sign != lastErrorSign) takeBackFactor *= 2;
+
+
         //Integral of the error (position)
         integralErr += error * diffTime; // I think this could also just be $position
-        //Derivative of error, acceleration
-        double derivativeErr = (error - lastError) / (currTime / lastTime);
 
-        double output = (error * kP) + (integralErr * kI) + (derivativeErr * kD);
+        double output = (gain * integralErr) / takeBackFactor;
         motor.setPower(output);
 
-        lastError = error;
-        lastPosition = position;
-        lastVelocity = velocity;
         lastTime = System.currentTimeMillis();
+        lastPosition = position;
     }
 
-    double getVelocity() {
-        return velocity;
-    }
-
+    double getVelocity() {return velocity;}
 }
