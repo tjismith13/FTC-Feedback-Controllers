@@ -4,14 +4,15 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class PID {
 
     DcMotorEx motor;
-    FtcDashboard dashboard;
+    Telemetry dashboard;
 
-    public PID(DcMotorEx motor, FtcDashboard dashboard) {
+    public PID(DcMotorEx motor, Telemetry dashboard) {
         this.motor = motor;
         this.dashboard = dashboard;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -27,13 +28,18 @@ public class PID {
 
     //Output variables
     private double velocity;
+    double position;
+    double derivativeErr;
+    double setpoint;
 
     // Setpoint in radians/second
     public void update(double setpoint, double kP, double kI, double kD) {
 
+        this.setpoint = setpoint;
+
         //Time, position, change in time, change in position
         double currTime = System.currentTimeMillis();
-        double position = motor.getCurrentPosition();
+        position = motor.getCurrentPosition();
         double diffTime = currTime - lastTime;
         double diffPos = position - lastPosition;
 
@@ -49,7 +55,7 @@ public class PID {
         //Integral of the error (position)
         integralErr += error * diffTime; // I think this could also just be $position
         //Derivative of error, acceleration
-        double derivativeErr = (error - lastError) / (currTime / lastTime);
+        derivativeErr = (error - lastError) / (currTime / lastTime);
 
         double output = (error * kP) + (integralErr * kI) + (derivativeErr * kD);
         motor.setPower(output);
@@ -62,6 +68,16 @@ public class PID {
 
     double getVelocity() {
         return velocity;
+    }
+
+    public void publishTelemetry(boolean update) {
+        dashboard.addData("Velocity", velocity);
+        dashboard.addData("Position", position);
+        dashboard.addData("Error", lastError);
+        dashboard.addData("Integral", integralErr);
+        dashboard.addData("Derivative", derivativeErr);
+        dashboard.addData("Setpoint", setpoint);
+        if(update) dashboard.update();
     }
 
 }

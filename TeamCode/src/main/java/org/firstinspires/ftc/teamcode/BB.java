@@ -4,12 +4,14 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class BB {
 
     DcMotorEx motor;
-    FtcDashboard dashboard;
+    Telemetry dashboard;
 
-    public BB(DcMotorEx motor, FtcDashboard dashboard) {
+    public BB(DcMotorEx motor, Telemetry dashboard) {
         this.motor = motor;
         this.dashboard = dashboard;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -20,10 +22,16 @@ public class BB {
     double lastTime = 0;
     double lastPosition = 0;
 
+    //Outputs
+    double error;
+    double setpoint;
+
     //Original sign of the error
     double sign;
     boolean started = false;
     public void update(double setpoint) {
+
+        this.setpoint = setpoint;
 
         //Original sign of error used to ensure we don't flip between 1 and -1, just +/-1 and 0
         if(!started) {
@@ -49,6 +57,8 @@ public class BB {
         else if(velocity < setpoint && sign == -1) output = 0;
         else output = -1;
 
+        error = setpoint - velocity;
+
         motor.setPower(output);
 
         lastPosition = position;
@@ -57,5 +67,12 @@ public class BB {
 
     double getVelocity() {
         return velocity;
+    }
+
+    public void publishTelemetry(boolean update) {
+        dashboard.addData("Velocity", velocity);
+        dashboard.addData("Error", error);
+        dashboard.addData("Setpoint", setpoint);
+        if(update) dashboard.update();
     }
 }

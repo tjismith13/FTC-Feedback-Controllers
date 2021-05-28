@@ -4,12 +4,14 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class TBH {
 
     DcMotorEx motor;
-    FtcDashboard dashboard;
+    Telemetry dashboard;
 
-    public TBH(DcMotorEx motor, FtcDashboard dashboard) {
+    public TBH(DcMotorEx motor, Telemetry dashboard) {
         this.motor = motor;
         this.dashboard = dashboard;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -26,7 +28,12 @@ public class TBH {
 
     //output (for getter)
     double velocity;
+    double error;
+    double setpoint;
+
     public void update(double setpoint, double gain) {
+
+        this.setpoint = setpoint;
 
         //Time, position, change in time, change in position
         double currTime = System.currentTimeMillis();
@@ -42,7 +49,7 @@ public class TBH {
         velocity *= (2 * Math.PI);
 
         //Error is also in rad/s
-        double error = setpoint - velocity;
+        error = setpoint - velocity;
 
         //Check for crossover
         double sign;
@@ -63,4 +70,12 @@ public class TBH {
     }
 
     double getVelocity() {return velocity;}
+
+    public void publishTelemetry(boolean update) {
+        dashboard.addData("Velocity", velocity);
+        dashboard.addData("Error", error);
+        dashboard.addData("Integral", integralErr);
+        dashboard.addData("Setpoint", setpoint);
+        if(update) dashboard.update();
+    }
 }
