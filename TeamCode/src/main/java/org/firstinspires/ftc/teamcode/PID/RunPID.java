@@ -81,7 +81,7 @@ public class RunPID extends OpMode {
         }
         else inRangeLast = false;
         if(done) dashTelemetry.addData("settling Time", settlingTime);
-
+        pid.publishTelemetry(false);
         dashTelemetry.update();
     }
 }
