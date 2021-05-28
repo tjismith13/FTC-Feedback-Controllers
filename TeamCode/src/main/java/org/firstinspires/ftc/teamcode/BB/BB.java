@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.BB;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,6 +41,7 @@ public class BB {
         }
         double position = motor.getCurrentPosition();
         double time = System.currentTimeMillis();
+        time /= 1000;
         double diffTime = time - lastTime;
         double diffPos = position - lastPosition;
 
@@ -62,7 +63,7 @@ public class BB {
         motor.setPower(output);
 
         lastPosition = position;
-        lastTime = System.currentTimeMillis();
+        lastTime = time;
     }
 
     double getVelocity() {

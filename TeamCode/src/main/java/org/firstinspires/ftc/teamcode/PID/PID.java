@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PID;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -39,6 +39,8 @@ public class PID {
 
         //Time, position, change in time, change in position
         double currTime = System.currentTimeMillis();
+        //convert to sec
+        currTime /= 1000.0;
         position = motor.getCurrentPosition();
         double diffTime = currTime - lastTime;
         double diffPos = position - lastPosition;
@@ -63,7 +65,7 @@ public class PID {
         lastError = error;
         lastPosition = position;
         lastVelocity = velocity;
-        lastTime = System.currentTimeMillis();
+        lastTime = currTime;
     }
 
     double getVelocity() {

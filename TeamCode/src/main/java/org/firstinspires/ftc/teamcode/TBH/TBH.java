@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TBH;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,6 +37,8 @@ public class TBH {
 
         //Time, position, change in time, change in position
         double currTime = System.currentTimeMillis();
+        //convert to sec
+        currTime /= 1000;
         double position = motor.getCurrentPosition();
         double diffTime = currTime - lastTime;
         double diffPos = position - lastPosition;
@@ -65,7 +67,7 @@ public class TBH {
         double output = (gain * integralErr) / takeBackFactor;
         motor.setPower(output);
 
-        lastTime = System.currentTimeMillis();
+        lastTime = currTime;
         lastPosition = position;
     }
 
