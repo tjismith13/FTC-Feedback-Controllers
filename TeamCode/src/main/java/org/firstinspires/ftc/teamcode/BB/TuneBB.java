@@ -19,7 +19,7 @@ public class TuneBB extends OpMode {
     BB bb;
 
     //Rad/s
-    double setpoint = 50;
+    double setpoint = 30;
 
     @Override
     public void init() {

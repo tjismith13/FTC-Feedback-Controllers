@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.util.LinkedList;
+
 public class PID {
 
     DcMotorEx motor;
@@ -18,6 +20,8 @@ public class PID {
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+    LinkedList<Double> displayVel = new LinkedList<>();
 
     //Variables needed for measuring rate of change
     double lastTime = 0;
@@ -31,6 +35,7 @@ public class PID {
     double position;
     double derivativeErr;
     double setpoint;
+    double diffTime;
 
     // Setpoint in radians/second
     public void update(double setpoint, double kP, double kI, double kD) {
@@ -42,7 +47,7 @@ public class PID {
         //convert to sec
         currTime /= 1000.0;
         position = motor.getCurrentPosition();
-        double diffTime = currTime - lastTime;
+        diffTime = currTime - lastTime;
         double diffPos = position - lastPosition;
 
         //Velocity (tick/s)
@@ -62,6 +67,8 @@ public class PID {
         double output = (error * kP) + (integralErr * kI) + (derivativeErr * kD);
         motor.setPower(output);
 
+        displayVel.addFirst(velocity);
+
         lastError = error;
         lastPosition = position;
         lastVelocity = velocity;
@@ -72,13 +79,31 @@ public class PID {
         return velocity;
     }
 
+    double getLastFiveAvg() {
+
+        if(displayVel.size() < 5) {
+            double sum = 0;
+            for(int i = 0; i < displayVel.size(); i++) {
+                sum += displayVel.get(i);
+            }
+            return sum / displayVel.size();
+        }
+
+        double sum = 0;
+        for(int i = 0; i < 5; i ++) {
+            sum += displayVel.get(i);
+        }
+        return sum / 5;
+    }
+
     public void publishTelemetry(boolean update) {
-        dashboard.addData("Velocity", velocity);
+        dashboard.addData("Velocity", getLastFiveAvg());
         dashboard.addData("Position", position);
         dashboard.addData("Error", lastError);
         dashboard.addData("Integral", integralErr);
         dashboard.addData("Derivative", derivativeErr);
         dashboard.addData("Setpoint", setpoint);
+        dashboard.addData("Change in time", diffTime);
         if(update) dashboard.update();
     }
 

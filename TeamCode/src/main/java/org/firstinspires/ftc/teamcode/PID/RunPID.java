@@ -16,7 +16,7 @@ public class RunPID extends OpMode {
     Telemetry dashTelemetry = dashboard.getTelemetry();
 
     //Rad/s
-    double setpoint = 50;
+    double setpoint = 30;
     double kP = 0.1;
     double kI = 0;
     double kD = 0;

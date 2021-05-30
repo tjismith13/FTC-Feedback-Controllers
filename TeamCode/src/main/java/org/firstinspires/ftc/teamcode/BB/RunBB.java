@@ -17,7 +17,7 @@ public class RunBB extends OpMode {
     Telemetry dashTelemetry = dashboard.getTelemetry();
 
     //Rad/s
-    double setpoint = 50;
+    double setpoint = 30;
 
     BB bb;
 

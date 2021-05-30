@@ -18,10 +18,10 @@ public class TunePID extends OpMode {
     PID pid;
 
     //Rad/s
-    double setpoint = 50;
-    double kP = 0.1;
-    double kI = 0;
-    double kD = 0;
+    double setpoint = 30;
+    double kP = 0.05;
+    double kI = 0.000000000012;
+    double kD = 0.0001;
 
     @Override
     public void init() {
