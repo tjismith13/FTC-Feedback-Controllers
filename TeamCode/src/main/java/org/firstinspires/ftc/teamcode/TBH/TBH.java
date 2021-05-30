@@ -62,9 +62,9 @@ public class TBH {
 
 
         //Integral of the error (position)
-        integralErr += error * diffTime; // I think this could also just be $position
+        integralErr += (error * diffTime) / takeBackFactor; // I think this could also just be $position
 
-        double output = (gain * integralErr) / takeBackFactor;
+        double output = (gain * integralErr);
         motor.setPower(output);
 
         lastTime = currTime;

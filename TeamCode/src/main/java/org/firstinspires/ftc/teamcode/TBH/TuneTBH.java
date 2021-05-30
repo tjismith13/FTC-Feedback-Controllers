@@ -20,7 +20,7 @@ public class TuneTBH extends OpMode {
 
     //Rad/s
     double setpoint = 30;
-    double k = 0.1;
+    double k = 0.000000000014;
 
     @Override
     public void init() {
